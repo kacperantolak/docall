@@ -1,7 +1,28 @@
 ﻿@page "/"
+@inject BuildingService BuildingService
 
-<PageTitle>Home</PageTitle>
+<h3>Building List</h3>
 
-<h1>Hello, world!</h1>
+@if (buildings == null)
+{
+<p><em>Loading...</em></p>
+}
+else
+{
+<ul>
+@foreach (var building in buildings)
+{
+<li>@building.name @building.street @building.number @building.city @building.postcode</li>
+}
+</ul>
+}
 
-Welcome to your new app.
+@code {
+
+    private List<Building> buildings;
+
+    protected override async Task OnInitializedAsync()
+    {
+        buildings = await BuildingService.GetAllBuildings();
+    }
+}

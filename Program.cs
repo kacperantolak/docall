@@ -1,10 +1,14 @@
 using docall.Components;
+using Microsoft.JSInterop;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddSingleton(sp => new BuildingService(new MongoDbHelper()));
 
 var app = builder.Build();
 
@@ -24,5 +28,7 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+
 
 app.Run();
