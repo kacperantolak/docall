@@ -1,0 +1,88 @@
+﻿@page "/buildings"
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Microsoft.AspNetCore.SignalR
+@using System.Threading.Tasks
+@rendermode InteractiveServer
+@inject BuildingService BuildingService
+
+<h3>Lista Budynków</h3>
+
+@if (buildings == null)
+{
+<p><em>Loading...</em></p>
+}
+else
+{
+    <QuickGrid Items="buildings">
+        <PropertyColumn Property="p => p.name" Title="Nazwa"></PropertyColumn>
+        <PropertyColumn Property="p => p.street" Title="Ulica"></PropertyColumn>
+        <PropertyColumn Property="p => p.number" Title="Numer Budynku"></PropertyColumn>
+        <PropertyColumn Property="p => p.city" Title="Miasto/Miejscowość"></PropertyColumn>
+        <PropertyColumn Property="p => p.postcode" Title="Kod Pocztowy"></PropertyColumn>
+        <TemplateColumn Title="Akcje">
+            <button @onclick="() => editBuilding(context)">Edytuj</button>
+            <button @onclick="() => deleteBuilding(context)">Usuń</button>
+        </TemplateColumn>
+    </QuickGrid>
+}
+
+<hr />
+    <EditForm Model="building" OnSubmit="updateBuildings" Enhance>
+        <div class="form-group">
+            <label>Nazwa</label>
+        <InputText @bind-Value="building.name" class="form-control"/>
+        </div>
+        <div class="form-group">
+            <label>Ulica</label>
+            <InputText @bind-Value="building.street" class="form-control"/>
+        </div>
+        <div class="form-group">
+            <label>Numer Budynku</label>
+            <InputText @bind-Value="building.number" class="form-control"/>
+        </div>
+        <div class="form-group">
+            <label>Miasto/Miejscowość</label>
+            <InputText @bind-Value="building.city" class="form-control"/>
+        </div>
+        <div class="form-group">
+            <label>Kod Pocztowy</label>
+            <InputText @bind-Value="building.postcode" class="form-control"/>
+        </div>
+        <button type="submit">Zapisz</button>
+        <button @onclick='() => {buildingAction =  "cancel"; building = new();}'>Anuluj</button>
+    </EditForm>
+
+@code {
+    Building building {get; set;} = new();
+    string buildingAction = "save";
+
+    private IQueryable<Building> buildings;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await fetchBuildings()
+;    }
+    public async Task fetchBuildings(){
+        List<Building> buildingsList = await BuildingService.GetAllBuildings();
+        buildings = buildingsList.AsQueryable();
+    }
+    public async Task updateBuildings(){
+        if (buildingAction == "save"){
+            await BuildingService.AddBuilding(building);
+        }
+        else if (buildingAction == "update"){
+            await BuildingService.EditBuilding(building);
+        }
+        building = new();
+        buildingAction = "save";
+        await fetchBuildings();
+    }
+    public void editBuilding(Building b){
+        buildingAction = "update";
+        building = b;
+    }      
+    public async Task deleteBuilding(Building b){
+        BuildingService.DeleteBuilding(b);
+        await fetchBuildings();
+    }    
+}
