@@ -1,0 +1,10 @@
+@page "/buildings/offices"
+@using Microsoft.AspNetCore.Components.QuickGrid
+<h3>Lista gabinetów w budynku @building.name</h3>
+
+
+@code
+{
+    [SupplyParameterFromQuery]
+    Building building {get; set;}
+}

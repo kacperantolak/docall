@@ -17,7 +17,7 @@ return await _db.GetCollection<Building>("building").Find(_ => true).ToListAsync
 
 public async Task AddBuilding(Building building)
 {
-await _db.GetCollection<Building>("building").InsertOneAsync(building);
+    await _db.GetCollection<Building>("building").InsertOneAsync(building);
 }
 public async Task EditBuilding(Building building)
     {
