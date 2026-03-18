@@ -1,10 +1,76 @@
-@page "/buildings/offices"
+@page "/buildings/offices{building}"
 @using Microsoft.AspNetCore.Components.QuickGrid
-<h3>Lista gabinetów w budynku @building.name</h3>
+@using Microsoft.AspNetCore.SignalR
+@using System.Threading.Tasks
+@rendermode InteractiveServer
+@inject BuildingService BuildingService
+@inject OfficeService OfficeService
 
+<h3>Lista Budynków</h3>
+@if (updateActive){
+        <EditForm Model="office" OnSubmit="updateOffices" Enhance>
+        <div class="form-group">
+            <label>Numer Pokoju</label>
+        <InputText @bind-Value="office.room_number" class="form-control"/>
+        </div>
+        <button type="submit">Zapisz</button>
+        <button @onclick='() => {officeAction =  "cancel"; office = new(); updateActive = false;}'>Anuluj</button>
+    </EditForm>
+}
+else{
+    @if (offices == null)
+        {
+        <p><em>Ładowanie...</em></p>
+    }
+    else
+    {   
+        <QuickGrid Items="offices">
+            <PropertyColumn Property="p => p.room_number" Title="Numer Pokoju"></PropertyColumn>
+            <TemplateColumn Title="Akcje">
+                <button @onclick="() => editOffice(context)">Edytuj</button>
+                <button @onclick="() => deleteOffice(context)">Usuń</button>
+            </TemplateColumn>
+        </QuickGrid>
+        <button @onclick="() => updateActive = true">Dodaj Budynek</button>
+    }
+}
 
-@code
-{
-    [SupplyParameterFromQuery]
-    Building building {get; set;}
+@code {
+    [Parameter]
+    public Building? building {get; set;}
+    Office office {get; set;} = new();
+    Boolean updateActive = false;
+    string officeAction = "save";
+
+    private IQueryable<Office> offices;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await fetchOffices()
+;    }
+    public async Task fetchOffices(){
+        List<Office> officesList = await OfficeService.GetOfficeByBuilding(building.id);
+        offices = officesList.AsQueryable();
+    }
+    public async Task updateOffices(){
+        if (officeAction == "save"){
+            await OfficeService.AddOffice(office);
+        }
+        else if (officeAction == "update"){
+            await OfficeService.EditOffice(office);
+        }
+        office = new();
+        officeAction = "save";
+        await fetchOffices();
+        updateActive = false;
+    }
+    public void editOffice(Office o){
+        officeAction = "update";
+        office = o;
+        updateActive = true;
+    }      
+    public async Task deleteOffice(Office o){
+        OfficeService.DeleteOffice(o);
+        await fetchOffices();
+    }    
 }

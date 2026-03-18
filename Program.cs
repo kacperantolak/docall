@@ -9,6 +9,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddSingleton(sp => new BuildingService(new MongoDbHelper()));
+builder.Services.AddSingleton(sp => new OfficeService(new MongoDbHelper()));
 
 var app = builder.Build();
 
