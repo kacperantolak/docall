@@ -1,4 +1,4 @@
-@page "/buildings/offices{building}"
+@page "/buildings/offices/{building}"
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using Microsoft.AspNetCore.SignalR
 @using System.Threading.Tasks
@@ -6,7 +6,7 @@
 @inject BuildingService BuildingService
 @inject OfficeService OfficeService
 
-<h3>Lista Budynków</h3>
+<h3>Lista Gabinetów</h3>
 @if (updateActive){
         <EditForm Model="office" OnSubmit="updateOffices" Enhance>
         <div class="form-group">
@@ -25,19 +25,19 @@ else{
     else
     {   
         <QuickGrid Items="offices">
-            <PropertyColumn Property="p => p.room_number" Title="Numer Pokoju"></PropertyColumn>
+            <PropertyColumn Property="p => p.room_number" Title="Numer Gabinetu"></PropertyColumn>
             <TemplateColumn Title="Akcje">
                 <button @onclick="() => editOffice(context)">Edytuj</button>
                 <button @onclick="() => deleteOffice(context)">Usuń</button>
             </TemplateColumn>
         </QuickGrid>
-        <button @onclick="() => updateActive = true">Dodaj Budynek</button>
+        <button @onclick="() => updateActive = true">Dodaj Gabinet</button>
     }
 }
 
 @code {
     [Parameter]
-    public Building? building {get; set;}
+    public string? building {get; set;}
     Office office {get; set;} = new();
     Boolean updateActive = false;
     string officeAction = "save";
@@ -46,13 +46,14 @@ else{
 
     protected override async Task OnInitializedAsync()
     {
-        await fetchOffices()
+        await fetchOffices();
 ;    }
     public async Task fetchOffices(){
-        List<Office> officesList = await OfficeService.GetOfficeByBuilding(building.id);
+        List<Office> officesList = await OfficeService.GetOfficeByBuilding(building);
         offices = officesList.AsQueryable();
     }
     public async Task updateOffices(){
+        office.building_id = building;
         if (officeAction == "save"){
             await OfficeService.AddOffice(office);
         }

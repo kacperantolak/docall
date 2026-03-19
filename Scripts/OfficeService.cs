@@ -22,7 +22,7 @@ public async Task AddOffice(Office office)
 }
 public async Task EditOffice(Office office)
     {
-        var filter = Builders<Office>.Filter.Eq("building_id", office.building_id);
+        var filter = Builders<Office>.Filter.Eq("id", office.id);
 
         var update = Builders<Office>.Update.Combine(
             Builders<Office>.Update.Set(b => b.room_number, office.room_number)

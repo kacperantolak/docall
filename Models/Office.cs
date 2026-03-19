@@ -8,5 +8,4 @@ public class Office
 public string id {get; set;}
 public string building_id { get; set; }
 public string room_number { get; set; }
-
 }

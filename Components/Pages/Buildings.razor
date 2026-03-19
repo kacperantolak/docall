@@ -46,7 +46,7 @@ else{
             <PropertyColumn Property="p => p.city" Title="Miasto/Miejscowość"></PropertyColumn>
             <PropertyColumn Property="p => p.postcode" Title="Kod Pocztowy"></PropertyColumn>
             <TemplateColumn Title="Akcje">
-                <button href="/buildings/offices/@context">Zobacz Gabinety</button>
+                <button onclick="window.location.href='/buildings/offices/@getBuildingId(context)'">Zobacz Gabinety</button>
                 <button @onclick="() => editBuilding(context)">Edytuj</button>
                 <button @onclick="() => deleteBuilding(context)">Usuń</button>
             </TemplateColumn>
@@ -90,5 +90,8 @@ else{
     public async Task deleteBuilding(Building b){
         BuildingService.DeleteBuilding(b);
         await fetchBuildings();
-    }    
+    }
+    public string getBuildingId(Building b){
+        return b.id;
+    }
 }
