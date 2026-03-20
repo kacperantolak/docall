@@ -9,91 +9,92 @@
 
 <h3>Lista Lekarzy</h3>
 @if (updateActive){
-        <EditForm Model="building" OnSubmit="updateBuildings" Enhance>
+        <EditForm Model="doctor" OnSubmit="updateDoctors" Enhance>
         <div class="form-group">
-            <label>Nazwa</label>
-        <InputText @bind-Value="building.name" class="form-control"/>
+            <label>Imię</label>
+        <InputText @bind-Value="doctor.first_name" class="form-control"/>
         </div>
         <div class="form-group">
-            <label>Ulica</label>
-            <InputText @bind-Value="building.street" class="form-control"/>
+            <label>Nazwisko</label>
+            <InputText @bind-Value="doctor.last_name" class="form-control"/>
         </div>
         <div class="form-group">
-            <label>Numer Budynku</label>
-            <InputText @bind-Value="building.number" class="form-control"/>
+            <label>Opis</label>
+            <InputText @bind-Value="doctor.bio" class="form-control"/>
         </div>
         <div class="form-group">
-            <label>Miasto/Miejscowość</label>
-            <InputText @bind-Value="building.city" class="form-control"/>
+            <label>E-Mail</label>
+            <InputText @bind-Value="doctor.email" class="form-control"/>
         </div>
-        <div class="form-group">
-            <label>Kod Pocztowy</label>
-            <InputText @bind-Value="building.postcode" class="form-control"/>
-        </div>
+        @if (doctorAction == "save"){
+            <div class="form-group">
+                <label>Hasło</label>
+                <InputText @bind-Value="doctor.password" class="form-control"/>
+            </div>
+        }
         <button type="submit">Zapisz</button>
-        <button @onclick='() => {buildingAction =  "cancel"; building = new(); updateActive = false;}'>Anuluj</button>
+        <button @onclick='() => {doctorAction =  "cancel"; doctor = new(); updateActive = false;}'>Anuluj</button>
     </EditForm>
 }
 else{
-    @if (buildings == null)
+    @if (doctors == null)
         {
         <p><em>Ładowanie...</em></p>
     }
     else
     {   
-        <QuickGrid Items="buildings">
-            <PropertyColumn Property="p => p.name" Title="Nazwa"></PropertyColumn>
-            <PropertyColumn Property="p => p.street" Title="Ulica"></PropertyColumn>
-            <PropertyColumn Property="p => p.number" Title="Numer Budynku"></PropertyColumn>
-            <PropertyColumn Property="p => p.city" Title="Miasto/Miejscowość"></PropertyColumn>
-            <PropertyColumn Property="p => p.postcode" Title="Kod Pocztowy"></PropertyColumn>
+        <QuickGrid Items="doctors">
+            <PropertyColumn Property="p => p.first_name" Title="Imię"></PropertyColumn>
+            <PropertyColumn Property="p => p.last_name" Title="Nazwisko"></PropertyColumn>
+            <PropertyColumn Property="p => p.bio" Title="Opis"></PropertyColumn>
+            <PropertyColumn Property="p => p.email" Title="E-Mail"></PropertyColumn>
+            <PropertyColumn Property="p => p.password" Title="Hasło"></PropertyColumn>
             <TemplateColumn Title="Akcje">
-                <button onclick="window.location.href='/buildings/offices/@getBuildingId(context)'">Zobacz Gabinety</button>
-                <button @onclick="() => editBuilding(context)">Edytuj</button>
-                <button @onclick="() => deleteBuilding(context)">Usuń</button>
+                <button @onclick="() => editDoctor(context)">Edytuj</button>
+                <button @onclick="() => deleteDoctor(context)">Usuń</button>
             </TemplateColumn>
         </QuickGrid>
-        <button @onclick="() => updateActive = true">Dodaj Budynek</button>
+        <button @onclick="() => updateActive = true">Dodaj Lekarza</button>
     }
 }
 
 @code {
-    Building building {get; set;} = new();
+    Doctor doctor {get; set;} = new();
     Boolean updateActive = false;
-    string buildingAction = "save";
+    string doctorAction = "save";
 
-    private IQueryable<Building> buildings;
+    private IQueryable<Doctor> doctors;
 
     protected override async Task OnInitializedAsync()
     {
-        await fetchBuildings()
+        await fetchDoctors()
 ;    }
-    public async Task fetchBuildings(){
-        List<Building> buildingsList = await BuildingService.GetAllBuildings();
-        buildings = buildingsList.AsQueryable();
+    public async Task fetchDoctors(){
+        List<Doctor> buildingsList = await DoctorService.GetAllDoctors();
+        doctors = buildingsList.AsQueryable();
     }
-    public async Task updateBuildings(){
-        if (buildingAction == "save"){
-            await BuildingService.AddBuilding(building);
+    public async Task updateDoctors(){
+        if (doctorAction == "save"){
+            await DoctorService.AddDoctor(doctor);
         }
-        else if (buildingAction == "update"){
-            await BuildingService.EditBuilding(building);
+        else if (doctorAction == "update"){
+            await DoctorService.EditDoctor(doctor);
         }
-        building = new();
-        buildingAction = "save";
-        await fetchBuildings();
+        doctor = new();
+        doctorAction = "save";
+        await fetchDoctors();
         updateActive = false;
     }
-    public void editBuilding(Building b){
-        buildingAction = "update";
-        building = b;
+    public void editDoctor(Doctor d){
+        doctorAction = "update";
+        doctor = d;
         updateActive = true;
     }      
-    public async Task deleteBuilding(Building b){
-        BuildingService.DeleteBuilding(b);
-        await fetchBuildings();
+    public async Task deleteDoctor(Doctor d){
+        DoctorService.DeleteDoctor(d);
+        await fetchDoctors();
     }
-    public string getBuildingId(Building b){
-        return b.id;
+    public string getDoctorId(Doctor d){
+        return d.id;
     }
 }
