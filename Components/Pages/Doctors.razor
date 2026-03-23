@@ -68,8 +68,8 @@ else{
         await fetchDoctors()
 ;    }
     public async Task fetchDoctors(){
-        List<Doctor> buildingsList = await DoctorService.GetAllDoctors();
-        doctors = buildingsList.AsQueryable();
+        List<Doctor> doctorList = await DoctorService.GetAllDoctors();
+        doctors = doctorList.AsQueryable();
     }
     public async Task updateDoctors(){
         if (doctorAction == "save"){

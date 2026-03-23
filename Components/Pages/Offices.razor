@@ -26,7 +26,7 @@ else{
         <QuickGrid Items="offices">
             <PropertyColumn Property="p => p.room_number" Title="Numer Gabinetu"></PropertyColumn>
             <TemplateColumn Title="Akcje">
-                <button onclick="window.location.href='/officebookings/@getOfficeId(context)'">Zobacz Rezerwacje</button>
+                <button onclick="window.location.href='/buildings/officebookings/@getOfficeId(context)'">Zobacz Rezerwacje</button>
                 <button @onclick="() => editOffice(context)">Edytuj</button>
                 <button @onclick="() => deleteOffice(context)">Usuń</button>
             </TemplateColumn>

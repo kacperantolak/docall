@@ -26,14 +26,14 @@
             width: 100%;
             padding: 10px;
             border: none;
-            background-color: #4CAF50;
+            background-color: #00C3D0;
             color: white;
             border-radius: 5px;
             cursor: pointer;
             max-width: fit-content;
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #00C3D0;
         }
 
 QuickGrid {

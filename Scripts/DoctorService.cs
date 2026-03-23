@@ -10,7 +10,11 @@ public DoctorService(MongoDbHelper db)
 {
 _db = db;
 }
-
+public async Task<List<Doctor>> GetDoctorById(string id)
+{
+    var filter = Builders<Doctor>.Filter.Eq("id", id);
+    return await _db.GetCollection<Doctor>("doctor").Find(filter).ToListAsync();
+}
 public async Task<List<Doctor>> GetAllDoctors()
 {
 return await _db.GetCollection<Doctor>("doctor").Find(_ => true).ToListAsync();
