@@ -5,6 +5,7 @@
 @using MongoDB.Bson
 @rendermode InteractiveServer
 @inject OfficeService OfficeService
+@inject DoctorService DoctorService
 
 <h3>Lista Rezerwacji</h3>
 @if (updateActive){
@@ -21,7 +22,14 @@
                 <option value="sat">Sobota</option>
                 <option value="sun">Niedziela</option>
             </InputSelect>
-        </div> 
+        </div>         <div class="form-group">
+            <label>Lekarz</label>
+            <InputSelect @bind-Value="booking.week_day" class="form-control">
+                @foreach (Doctor d in doctorList){
+                    <option value="@d.id">@d.first_name @d.last_name</option>
+                }
+            </InputSelect>
+        </div>
         <div class="form-group">
             <label>Czas rozpoczęcia rezerwacji</label>
         <InputDate TValue="TimeOnly" @bind-Value="booking.time_start" class="form-control"/>
@@ -63,15 +71,20 @@ else{
     Boolean updateActive = false;
     string bookingAction = "save";
     private IQueryable<OfficeBooking> bookings;
+    List<Doctor> doctorList;
 
 
     protected override async Task OnInitializedAsync()
     {
-        await fetchBookings()
+        await fetchBookings();
+        await fetchDoctors();
 ;   }
     public async Task fetchBookings(){
         List<OfficeBooking> bookingList = await OfficeService.GetOfficeBookingsByOffice(office_id);
         bookings = bookingList.AsQueryable();
+    }    
+    public async Task fetchDoctors(){
+        doctorList = await DoctorService.GetAllDoctors();
     }
     public async Task updateBookings(){
         if (bookingAction == "save"){
