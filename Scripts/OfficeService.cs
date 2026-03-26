@@ -12,7 +12,7 @@ _db = db;
 
 public async Task<List<Office>> GetOfficeByBuilding(string id)
 {
-    var filter = Builders<Office>.Filter.Eq("building_id", id);
+    var filter = Builders<Office>.Filter.Eq(o => o.building_id, id);
     return await _db.GetCollection<Office>("office").Find(filter).ToListAsync();
 }
 public async Task<Office> GetOfficeById(string id)

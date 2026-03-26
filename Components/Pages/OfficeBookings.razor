@@ -14,7 +14,7 @@
         <div class="form-group">
             <label>Dzień tygodnia</label>
             <InputSelect @bind-Value="booking.week_day" class="form-control">
-                <option value="mon">Poniedziałek</option>
+                <option selected value="mon">Poniedziałek</option>
                 <option value="tue">Wtorek</option>
                 <option value="wed">Środa</option>
                 <option value="thu">Czwartek</option>
@@ -22,9 +22,10 @@
                 <option value="sat">Sobota</option>
                 <option value="sun">Niedziela</option>
             </InputSelect>
-        </div>         <div class="form-group">
+        </div>         
+        <div class="form-group">
             <label>Lekarz</label>
-            <InputSelect @bind-Value="booking.week_day" class="form-control">
+            <InputSelect @bind-Value="booking.doctor_id" class="form-control">
                 @foreach (Doctor d in doctorList){
                     <option value="@d.id">@d.first_name @d.last_name</option>
                 }
@@ -32,11 +33,11 @@
         </div>
         <div class="form-group">
             <label>Czas rozpoczęcia rezerwacji</label>
-        <InputDate TValue="TimeOnly" @bind-Value="booking.time_start" class="form-control"/>
+        <InputDate Type="@InputDateType.Time" @bind-Value="booking.time_start" class="form-control"/>
         </div>
         <div class="form-group">
             <label>Czas zakończenia rezerwacji</label>
-            <InputDate TValue="TimeOnly" @bind-Value="booking.time_end" class="form-control"/>
+            <InputDate Type="@InputDateType.Time" @bind-Value="booking.time_end" class="form-control"/>
         </div>
 
         <button type="submit">Zapisz</button>
@@ -54,7 +55,8 @@ else{
             <PropertyColumn Property="p => p.week_day" Title="Dzień tygodnia"></PropertyColumn>
             <PropertyColumn Property="p => p.time_start" Title="Czas rozpoczęcia"></PropertyColumn>
             <PropertyColumn Property="p => p.time_end" Title="Czas zakończenia"></PropertyColumn>
-            <PropertyColumn Property="p => getOfficeNumberById(p.office_id)" Title="Gabinet"></PropertyColumn>
+            <TemplateColumn Title="Lekarz">@(async () => await getOfficeNumberById(context.office_id))</TemplateColumn>
+            <TemplateColumn Title="Gabinet">@(async () => await getDoctorNameById(context.doctor_id))</TemplateColumn>
             <TemplateColumn Title="Akcje">
                 <button @onclick="() => editBooking(context)">Edytuj</button>
                 <button @onclick="() => deleteBooking(context)">Usuń</button>
@@ -89,6 +91,7 @@ else{
     public async Task updateBookings(){
         if (bookingAction == "save"){
             booking.office_id = office_id;
+            booking.created_at = DateTime.Now;
             await OfficeService.BookOffice(booking);
         }
         else if (bookingAction == "update"){
@@ -110,6 +113,10 @@ else{
     }
     public async Task<string> getOfficeNumberById(string id){
         Office o =  await OfficeService.GetOfficeById(id);
-        return o.room_number;
+        return o.room_number + "";
+    }
+        public async Task<string> getDoctorNameById(string id){
+        Doctor d =  await DoctorService.GetDoctorById(id);
+        return d.first_name + " " + d.last_name;
     }
 }
